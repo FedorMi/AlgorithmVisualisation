@@ -13,9 +13,17 @@ class Sort_Worker(QRunnable):
         self.signals = WorkerSignals()
         sorting_algos = [self.bubble_sort, self.selection_sort, self.quick_sort, self.merge_sort, self.heap_sort]
         self.fn = sorting_algos[choice]
-
+    
     def run(self):
         self.fn()
+
+    def draw_switch(self, i, j, times):
+        self.signals.progress.emit(i, j)
+        time.sleep(times)
+
+    def draw_comparison(self, i, j, times):
+        self.signals.comparison.emit(i, j)
+        time.sleep(times)
 
     def bubble_sort(self):
         arr = self.arr
@@ -29,6 +37,7 @@ class Sort_Worker(QRunnable):
                     self.signals.progress.emit(j+1, j)
                     time.sleep(0.01)
         self.signals.finished.emit()
+
     def selection_sort(self):
         arr = self.arr
         n = len(arr)
@@ -42,6 +51,7 @@ class Sort_Worker(QRunnable):
                 time.sleep(0.01)
                 j -= 1
         self.signals.finished.emit()
+
     def quick_sort(self, begin=0, end=None):
         arr = self.arr
         if end is None:
@@ -52,7 +62,9 @@ class Sort_Worker(QRunnable):
             pivot = self.quick_helper(begin, end)
             _quick_sort(begin, pivot-1)
             _quick_sort(pivot+1, end)
-        return _quick_sort(begin, end)
+        _quick_sort(begin, end)
+        self.signals.finished.emit()
+
     def quick_helper(self, begin, end):
         arr = self.arr
         pivot = begin
@@ -66,9 +78,12 @@ class Sort_Worker(QRunnable):
         self.signals.progress.emit(pivot, begin)
         time.sleep(0.01)
         return pivot
+    
     def merge_sort(self):
         arr = self.arr
         self.merge_sort_helper(arr, 0, len(arr)-1)
+        self.signals.finished.emit()
+
     def merge_sort_helper(self, arr, l, r):
         if (l < r):
             # Same as (l + r) / 2, but avoids overflow
@@ -78,6 +93,7 @@ class Sort_Worker(QRunnable):
             self.merge_sort_helper(arr, l, m)
             self.merge_sort_helper(arr, m + 1, r)
             self.merge(arr, l, m, r)
+    
     def merge(self, arr, start, mid, end):
         start2 = mid + 1
         # If the direct merge is already sorted
@@ -106,6 +122,7 @@ class Sort_Worker(QRunnable):
                 start += 1
                 mid += 1
                 start2 += 1
+        
     def heap_sort(self):
         arr = self.arr
         n = len(arr)
@@ -117,6 +134,8 @@ class Sort_Worker(QRunnable):
             self.signals.progress.emit(i, 0)
             time.sleep(0.01)
             self.heapify(arr, i, 0) # Heapify root element
+        self.signals.finished.emit()
+
     def heapify(self, arr, n, i):
         # Find largest among root and children
         largest = i
@@ -144,6 +163,10 @@ class Search_Worker(QRunnable):
 
     def run(self):
         self.fn()
+
+    def draw(self, i, times):
+        self.signals.guess.emit(i)
+        time.sleep(times)
 
     def linear_search(self):
         arr = self.arr
@@ -182,4 +205,5 @@ class WorkerSignals(QObject):
     result = pyqtSignal(object)
     list = pyqtSignal(list)
     progress = pyqtSignal(int, int)
+    comparison = pyqtSignal(int, int)
     guess = pyqtSignal(int)
