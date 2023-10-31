@@ -9,6 +9,7 @@ from PyQt5.QtCore import *
 import sys
 import time
 from search_and_sort_algorithms import Sort_Worker, Search_Worker
+#from implement_algorithms import Sort_Worker, Search_Worker
 
 
 class Window(QWidget):
@@ -87,16 +88,19 @@ class Window(QWidget):
         top_row.addWidget(button_sort)
         top_row.addWidget(select_size)
         search_layout.addLayout(top_row)
-        self.bottom_row = QHBoxLayout()
+        self.bottom_wrapper = QWidget()
+        bottom_row = QHBoxLayout()
+        bottom_row.setContentsMargins(0, 0, 0, 0)
         how_many = self.amount if self.amount <= 16 else 16
         for i in range(how_many):
             button = QPushButton(str(i), self)
             button.setStyleSheet("QPushButton {background-color: rgb(20, 20, 35); color: rgb(0, 255, 0); border:1px solid rgb(0, 255, 0); font: 18px} QPushButton::hover {background-color: rgb(20, 100, 35);}")
             button.setObjectName(str(i))
             button.clicked.connect(self.show_number)
-            self.bottom_row.addWidget(button)
+            bottom_row.addWidget(button)
         search_layout.addWidget(self.label)
-        search_layout.addLayout(self.bottom_row)
+        self.bottom_wrapper.setLayout(bottom_row)
+        search_layout.addWidget(self.bottom_wrapper)
         self.label.setStyleSheet("border:1px solid rgb(0, 255, 0);")
         canvas = QtGui.QPixmap(self.pixw, self.pixh)
         self.label.setPixmap(canvas)
@@ -106,10 +110,29 @@ class Window(QWidget):
     def search_choice(self, num):
         self.search_num = num
 
-    def choose_size_search(self, num):
+    def choose_size_search_old(self, num):
         amounts = [50, 8, 16, 50, 100, 200, 300, 400, 500]
         self.amount = amounts[num]
         self.setup_random_array_search()
+    def choose_size_search(self, num):
+        amounts = [50, 8, 16, 50, 100, 200, 300, 400, 500]
+        self.amount = amounts[num]
+        self.search_layout.removeWidget(self.bottom_wrapper)
+        self.bottom_wrapper.close()
+        self.bottom_wrapper = QWidget()
+        bottom_row = QHBoxLayout()
+        self.setup_random_array_search()
+        how_many = self.amount if self.amount <= 16 else 16
+        for i in range(how_many):
+            button = QPushButton(str(i), self)
+            button.setStyleSheet("QPushButton {background-color: rgb(20, 20, 35); color: rgb(0, 255, 0); border:1px solid rgb(0, 255, 0); font: 18px} QPushButton::hover {background-color: rgb(20, 100, 35);}")
+            button.setObjectName(str(i))
+            button.clicked.connect(self.show_number)
+            bottom_row.addWidget(button)
+        bottom_row.setContentsMargins(0, 0, 0, 0)
+        self.bottom_wrapper.setLayout(bottom_row)
+        self.search_layout.addWidget(self.bottom_wrapper)
+        self.update()
     
     def run_searching(self):
         worker = Search_Worker(self.arr, self.guess_number, self.search_num)
@@ -197,7 +220,9 @@ class Window(QWidget):
         top_row.addWidget(select_sorting_algo)
         top_row.addWidget(button_sorting)
         top_row.addWidget(select_size)
-        self.bottom_row = QHBoxLayout()
+        self.bottom_wrapper = QWidget()
+        bottom_row = QHBoxLayout()
+        bottom_row.setContentsMargins(0, 0, 0, 0)
         self.switch_places = []
         how_many = self.amount if self.amount <= 16 else 16
         for i in range(how_many):
@@ -205,10 +230,11 @@ class Window(QWidget):
             button.setStyleSheet("QPushButton {background-color: rgb(20, 20, 35); color: rgb(0, 255, 0); border:1px solid rgb(0, 255, 0); font: 18px} QPushButton::hover {background-color: rgb(20, 100, 35);}")
             button.setObjectName(str(i))
             button.clicked.connect(self.show_number_sort)
-            self.bottom_row.addWidget(button)
+            bottom_row.addWidget(button)
+        self.bottom_wrapper.setLayout(bottom_row)
         sort_layout.addLayout(top_row)
         sort_layout.addWidget(self.label)
-        sort_layout.addLayout(self.bottom_row)
+        sort_layout.addWidget(self.bottom_wrapper)
         self.label.setStyleSheet("border:1px solid rgb(0, 255, 0);")
         canvas = QtGui.QPixmap(self.pixw, self.pixh)
         self.label.setPixmap(canvas)
@@ -239,19 +265,18 @@ class Window(QWidget):
         painter.drawLine(myx, self.ah, myx, self.ah-myy)
         self.update()
     
-    def choose_size_sort(self, num):
+    def choose_size_sort_old(self, num):
         amounts = [50, 8, 16, 50, 100, 200, 300, 400, 500]
         self.amount = amounts[num]
         self.setup_random_array()
     
-    def choose_size_sort_workinprogress(self, num):
+    def choose_size_sort(self, num):
         amounts = [50, 8, 16, 50, 100, 200, 300, 400, 500]
-        for i in range(self.bottom_row.count()):
-            myWidget = self.bottom_row.itemAt(i)
-            self.bottom_row.removeItem(myWidget)
-        self.sort_layout.removeItem(self.bottom_row)
         self.amount = amounts[num]
-        self.bottom_row = QHBoxLayout()
+        self.sort_layout.removeWidget(self.bottom_wrapper)
+        self.bottom_wrapper.close()
+        self.bottom_wrapper = QWidget()
+        bottom_row = QHBoxLayout()
         self.setup_random_array()
         self.switch_places = []
         how_many = self.amount if self.amount <= 16 else 16
@@ -260,8 +285,10 @@ class Window(QWidget):
             button.setStyleSheet("QPushButton {background-color: rgb(20, 20, 35); color: rgb(0, 255, 0); border:1px solid rgb(0, 255, 0); font: 18px} QPushButton::hover {background-color: rgb(20, 100, 35);}")
             button.setObjectName(str(i))
             button.clicked.connect(self.show_number_sort)
-            self.bottom_row.addWidget(button)
-        self.sort_layout.addLayout(self.bottom_row)
+            bottom_row.addWidget(button)
+        bottom_row.setContentsMargins(0, 0, 0, 0)
+        self.bottom_wrapper.setLayout(bottom_row)
+        self.sort_layout.addWidget(self.bottom_wrapper)
         self.update()
     
     def setup_random_array(self):
@@ -273,7 +300,8 @@ class Window(QWidget):
     
     def run_sorting(self):
         worker = Sort_Worker(self.arr, self.sort_num)
-        worker.signals.progress.connect(self.draw_aray_show_with_outline)
+        worker.signals.progress.connect(self.draw_aray_show_with_outline_switch)
+        worker.signals.comparison.connect(self.draw_aray_show_with_outline_comparison)
         worker.signals.finished.connect(self.draw_aray_with_outline)
         self.threadpool.start(worker)
 
@@ -317,7 +345,13 @@ class Window(QWidget):
         self.lengtho, self.aw, self.ah, self.highest, self.pen, self.pen_width = lengtho, aw, ah, highest, pen, pen_width 
         self.update()
 
-    def draw_aray_show_with_outline(self, a, b):
+    def draw_aray_show_with_outline_switch(self, a, b):
+        self.draw_aray_show_with_outline_helper(a, b, "red")
+
+    def draw_aray_show_with_outline_comparison(self, a, b):
+        self.draw_aray_show_with_outline_helper(a, b, "blue")
+    
+    def draw_aray_show_with_outline_helper(self, a, b, color):
         lengtho, aw, ah, highest, painter, pen, pen_width = self.setup_draw()
         for i, k in enumerate(self.arr):
             myx = int(aw*i/lengtho)+int(pen_width/2)
@@ -328,7 +362,7 @@ class Window(QWidget):
             painter.drawLine(myx, ah, myx, ah-myy)
             pen.setWidth(int(pen_width-2))
             if i == a or i == b:
-                pen.setColor(QtGui.QColor('red'))
+                pen.setColor(QtGui.QColor(color))
                 painter.setPen(pen)
                 painter.drawLine(myx, ah, myx, ah-myy)
                 pen.setColor(QtGui.QColor('green'))
