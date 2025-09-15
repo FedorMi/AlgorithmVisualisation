@@ -25,6 +25,10 @@ class Sort_Worker(QRunnable):
         self.signals.comparison.emit(i, j)
         time.sleep(times)
 
+    def draw_guess(self, i, times):
+        self.signals.guess.emit(i)
+        time.sleep(times)
+
     def bubble_sort(self):
         arr = self.arr
         n = len(arr)
@@ -181,10 +185,17 @@ class Search_Worker(QRunnable):
             print("not in array")
 
 class WorkerSignals(QObject):
+    # signal to indicate that the algorithm is finished
     finished = pyqtSignal()
+    # signal to indicate an error
     error = pyqtSignal(tuple)
+    # signal to emit the result
     result = pyqtSignal(object)
+    # signal to emit the current state of the list
     list = pyqtSignal(list)
+    # signal to indicate progress in sorting (indexes being swapped)
     progress = pyqtSignal(int, int)
+    # signal to indicate comparison between two indexes
     comparison = pyqtSignal(int, int)
+    # signal to indicate the current guess in searching
     guess = pyqtSignal(int)

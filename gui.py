@@ -1,13 +1,12 @@
-from PyQt5 import QtWidgets, QtCore, QtGui, uic
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout, QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QComboBox,QScrollArea
 import sys
 import numpy as np
-from random import randint, choice
+
+from PyQt5 import QtWidgets, QtCore, QtGui, uic
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import sys
-import time
+
+from random import randint, choice
 from search_and_sort_algorithms import Sort_Worker, Search_Worker
 #from implement_algorithms import Sort_Worker, Search_Worker
 
