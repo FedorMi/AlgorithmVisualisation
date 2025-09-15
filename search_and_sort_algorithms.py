@@ -86,30 +86,21 @@ class Sort_Worker(QRunnable):
 
     def merge_sort_helper(self, arr, l, r):
         if (l < r):
-            # Same as (l + r) / 2, but avoids overflow
-            # for large l and r
             m = l + (r - l) // 2
-            # Sort first and second halves
             self.merge_sort_helper(arr, l, m)
             self.merge_sort_helper(arr, m + 1, r)
             self.merge(arr, l, m, r)
     
     def merge(self, arr, start, mid, end):
         start2 = mid + 1
-        # If the direct merge is already sorted
         if (arr[mid] <= arr[start2]):
             return
-        # Two pointers to maintain start
-        # of both arrays to merge
         while (start <= mid and start2 <= end):
-            # If element 1 is in right place
             if (arr[start] <= arr[start2]):
                 start += 1
             else:
                 value = arr[start2]
                 index = start2
-                # Shift all the elements between element 1
-                # element 2, right by 1.
                 while (index != start):
                     arr[index] = arr[index - 1]
                     index -= 1
@@ -118,7 +109,6 @@ class Sort_Worker(QRunnable):
                 arr[start] = value
                 self.signals.progress.emit(start, start2)
                 time.sleep(0.01)
-                # Update all the pointers
                 start += 1
                 mid += 1
                 start2 += 1
@@ -126,18 +116,16 @@ class Sort_Worker(QRunnable):
     def heap_sort(self):
         arr = self.arr
         n = len(arr)
-        # Build max heap
         for i in range(n//2, -1, -1):
             self.heapify(arr, n, i)
         for i in range(n-1, 0, -1):
-            arr[i], arr[0] = arr[0], arr[i] # Swap
+            arr[i], arr[0] = arr[0], arr[i]
             self.signals.progress.emit(i, 0)
             time.sleep(0.01)
-            self.heapify(arr, i, 0) # Heapify root element
+            self.heapify(arr, i, 0)
         self.signals.finished.emit()
 
     def heapify(self, arr, n, i):
-        # Find largest among root and children
         largest = i
         l = 2 * i + 1
         r = 2 * i + 2
@@ -145,7 +133,6 @@ class Sort_Worker(QRunnable):
             largest = l
         if r < n and arr[largest] < arr[r]:
             largest = r
-        # If root is not largest, swap with largest and continue heapifying
         if largest != i:
             arr[i], arr[largest] = arr[largest], arr[i]
             self.signals.progress.emit(largest, i)
@@ -180,23 +167,17 @@ class Search_Worker(QRunnable):
         arr = self.arr
         self.binary_search_helper(arr, 0, len(arr)-1, self.guess)
     def binary_search_helper(self, arr, low, high, x):
-        # Check base case
         if high >= low:
             mid = (high + low) // 2
-            # If element is present at the middle itself
             self.signals.guess.emit(mid)
             time.sleep(0.5)
             if arr[mid] == x:
                 print("found")
-            # If element is smaller than mid, then it can only
-            # be present in left subarray
             elif arr[mid] > x:
                 self.binary_search_helper(arr, low, mid - 1, x)
-            # Else the element can only be present in right subarray
             else:
                 self.binary_search_helper(arr, mid + 1, high, x)
         else:
-            # Element is not present in the array
             print("not in array")
 
 class WorkerSignals(QObject):
